@@ -121,12 +121,7 @@ const DataDisplay = () => {
           </div>
 
           {/* Display filtered data */}
-          <ul
-            className={`grid gap-6 ${darkMode ? "bg-gray-900" : "bg-gray-50"}`}
-            style={{
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            }}
-          >
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredData.map((item) => (
               <li
                 key={item._id}
@@ -135,18 +130,18 @@ const DataDisplay = () => {
                   darkMode ? "bg-gray-800" : "bg-white"
                 }`}
               >
-                <div className="p-4">
-                  <h3 className="text-lg font-bold mb-2">
+                <div className="p-4 sm:p-6">
+                  <strong className="text-lg sm:text-xl font-semibold mb-2">
                     {item._source.name}
-                  </h3>
+                  </strong>
                   <p>
-                    <strong>{t("type")}:</strong> {item._source.type}
+                    <strong>{t("type")}</strong> {item._source.type}
                   </p>
                   <p>
-                    <strong>{t("country")}:</strong> {item._source.country}
+                    <strong>{t("country")}</strong> {item._source.country}
                   </p>
                   <p>
-                    <strong>{t("currency")}:</strong> {item._source.currency}
+                    <strong>{t("currency")}</strong> {item._source.currency}
                   </p>
                 </div>
               </li>
