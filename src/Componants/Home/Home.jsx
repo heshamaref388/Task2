@@ -131,9 +131,9 @@ const DataDisplay = () => {
                 }`}
               >
                 <div className="p-4 sm:p-6">
-                  <h3 className="text-lg sm:text-xl font-semibold mb-3">
+                  <strong className="text-lg sm:text-xl font-semibold mb-3">
                     {item._source.name}
-                  </h3>
+                  </strong>
                   <p>
                     <strong>{t("type")}</strong> {item._source.type}
                   </p>
