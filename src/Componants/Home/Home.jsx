@@ -131,7 +131,7 @@ const DataDisplay = () => {
                 }`}
               >
                 <div className="p-4 sm:p-6">
-                  <strong className="text-lg sm:text-xl font-semibold mb-3">
+                  <strong className="text-lg sm:text-xl font-semibold mb-2">
                     {item._source.name}
                   </strong>
                   <p>
