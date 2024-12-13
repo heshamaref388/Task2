@@ -130,7 +130,7 @@ const DataDisplay = () => {
                   darkMode ? "bg-gray-800" : "bg-white"
                 }`}
               >
-                <div className="p-3 sm:p-6">
+                <div className="p-4 sm:p-6">
                   <strong className="text-lg sm:text-xl font-semibold mb-2">
                     {item._source.name}
                   </strong>
