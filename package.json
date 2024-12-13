@@ -1,7 +1,7 @@
 {
   "name": "task",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.0n",
   "type": "module",
   "homepage": "https://heshamaref388.github.io/Task2",
   "scripts": {
@@ -9,9 +9,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prodeploy":"npm run build",
+    "redeploy":"npm run bulid",
     "deploy": "gh-pages -d dist"
-    
   },
   "dependencies": {
     "i18next": "^24.0.5",

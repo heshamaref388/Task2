@@ -70,13 +70,6 @@ const DataDisplay = () => {
         />
         <meta name="keywords" content="data, list, information, SEO" />
         <meta name="author" content="FutTech" />
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=YourFontFamily&display=swap"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
       </Helmet>
 
       <div
