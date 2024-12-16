@@ -15,9 +15,13 @@ export const ThemeProvider = ({ children }) => {
     setIsDarkMode((prevMode) => !prevMode);
   };
 
+  const rootClass = isDarkMode ? "dark" : ""; // Determine the root class
+
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
-      {children}
-    </ThemeContext.Provider>
+    <div className={rootClass}>
+      <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+        {children}
+      </ThemeContext.Provider>
+    </div>
   );
 };

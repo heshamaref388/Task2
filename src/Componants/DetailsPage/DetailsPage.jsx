@@ -1,21 +1,23 @@
 import { useParams, useNavigate } from "react-router-dom";
 import data from "../../../public/metadata.json";
 import { useTranslation } from "react-i18next"; // Import useTranslation from react-i18next
-import { useEffect } from "react"; // Import useEffect for key listener
+import { useEffect, useState } from "react"; // Import useEffect for key listener
 import { Helmet } from "react-helmet";
 
+import Spinner from "../Spinner"; // Import Spinner component
+
 const DetailsPage = () => {
+  const [loading, setLoading] = useState(true); // Add loading state
   const { t } = useTranslation(); // Initialize translation hook
   const { id } = useParams();
   const navigate = useNavigate();
-
   const details = data.hits.hits.find((item) => item._id === id)?._source;
 
   // Handle Backspace key for navigation
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Backspace") {
-        navigate(-1); // Navigate back one step
+        window.history.back(); // Navigate back one step
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -23,8 +25,18 @@ const DetailsPage = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown); // Cleanup on unmount
     };
-  }, [navigate]);
+  }, []);
 
+  useEffect(() => {
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000); // Simulate a 1 second loading time
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) return <Spinner />; // Show spinner while loading
   if (!details) {
     return (
       <>
@@ -52,7 +64,7 @@ const DetailsPage = () => {
         <div className="bg-white rounded-lg shadow-lg p-6">
           {/* Back Button */}
           <button
-            onClick={() => navigate(-1)} // Navigate one step back
+            onClick={() => window.history.back()} // Navigate one step back
             className="absolute top-6 left-8 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-md shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:opacity-90"
             title={t("pressBackspace")} // Tooltip message
           >
@@ -163,7 +175,7 @@ const DetailsPage = () => {
           )}
           <div className="mt-8 text-center">
             <button
-              onClick={() => navigate(`/candle/${details.symbol}`)}
+              onClick={() => navigate(`/candle/${details.symbol}`)} // Navigate to candle data
               className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-md shadow hover:shadow-lg transition duration-300 transform hover:scale-105"
             >
               {t("viewCandleData")}

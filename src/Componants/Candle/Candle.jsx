@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useTranslation } from "react-i18next"; // Import the useTranslation hook
 import { Helmet } from "react-helmet";
+import Spinner from "../Spinner"; // Import Spinner component
 
 const CandleDataPage = () => {
   const { t } = useTranslation(); // Initialize the translation hook
@@ -10,19 +11,11 @@ const CandleDataPage = () => {
   const [candleData, setCandleData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === "Backspace") {
-        navigate(-1); // Navigate back one step
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown); // Cleanup on unmount
-    };
-  }, [navigate]);
+  const handleBackNavigation = () => {
+    window.history.back(); // Custom back navigation
+  };
+
   useEffect(() => {
     const fetchCandleData = async () => {
       try {
@@ -40,7 +33,7 @@ const CandleDataPage = () => {
     fetchCandleData();
   }, [symbol]);
 
-  if (loading) return <div className="text-center text-lg">{t("loading")}</div>;
+  if (loading) return <Spinner />; // Show spinner while loading
 
   if (error)
     return (
@@ -58,7 +51,7 @@ const CandleDataPage = () => {
       <div className="container mx-auto p-6 relative">
         {/* Back Button */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={handleBackNavigation}
           title={t("pressBackspace")}
           className="absolute top-4 left-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-md shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hover:opacity-90"
         >
