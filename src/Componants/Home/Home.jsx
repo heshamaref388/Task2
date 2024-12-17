@@ -1,6 +1,5 @@
 import { useEffect, useMemo, Suspense, useState } from "react";
 import Spinner from "../Spinner"; // Import Spinner component
-// import { useTheme } from "../ThemeContext/ThemeContext"; // Import useTheme
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar";
