@@ -22,6 +22,9 @@ describe("Candle Component", () => {
       </React.StrictMode>
     );
 
+    // const loadingElement = screen.getByText(/loading/i); // Check for loading text
+    // expect(loadingElement).toBeInTheDocument(); // Ensure loading text is present
+
     // Clean up after test
     root.unmount();
   });
