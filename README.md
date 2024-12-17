@@ -49,7 +49,7 @@ Docker is a platform that allows developers to automate the deployment of applic
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
+   git clone https://github.com/heshamaref388/Task2
    ```
 2. Navigate to the project directory:
    ```bash
@@ -68,7 +68,7 @@ To run the project locally, use the following command:
 npm run dev
 ```
 
-Then open your browser and navigate to `http://localhost:3000`.
+Then open your browser and navigate to `http://localhost:5173`.
 
 ## Running with Docker
 
