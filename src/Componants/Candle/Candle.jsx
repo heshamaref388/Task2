@@ -1,11 +1,50 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { useTranslation } from "react-i18next"; // Import the useTranslation hook
+import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet";
-import Spinner from "../Spinner"; // Import Spinner component
+import Spinner from "../Spinner";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale,
+  TimeSeriesScale,
+  PointElement,
+  LineElement,
+  BarElement,
+} from "chart.js";
+import zoomPlugin from "chartjs-plugin-zoom";
+import { Chart } from "react-chartjs-2";
+import {
+  CandlestickController,
+  CandlestickElement,
+} from "chartjs-chart-financial";
+import "chartjs-adapter-date-fns";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale,
+  TimeSeriesScale,
+  CandlestickElement,
+  CandlestickController,
+  PointElement,
+  LineElement,
+  BarElement,
+  zoomPlugin
+);
 
 const CandleDataPage = () => {
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
   const { t } = useTranslation(); // Initialize the translation hook
   const { symbol } = useParams();
   const [candleData, setCandleData] = useState([]);
@@ -31,6 +70,14 @@ const CandleDataPage = () => {
       }
     };
     fetchCandleData();
+
+    // Cleanup function to destroy chart instance
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+        chartInstance.current = null;
+      }
+    };
   }, [symbol]);
 
   if (loading) return <Spinner />; // Show spinner while loading
@@ -41,6 +88,15 @@ const CandleDataPage = () => {
         {t("error")}: {error.message}
       </div>
     );
+
+  // Transform data for financial chart
+  const chartData = candleData.map((item) => ({
+    x: new Date(item._source.dateTime),
+    o: item._source.startPrice,
+    h: item._source.highestPrice,
+    l: item._source.lowestPrice,
+    c: item._source.endPrice,
+  }));
 
   if (candleData.length === 0) {
     return <div className="text-center">{t("noData")}</div>;
@@ -58,56 +114,282 @@ const CandleDataPage = () => {
           &larr; {t("back")}
         </button>
 
+        <Helmet>
+          <title>
+            {t("candleDataFor")} {symbol}
+          </title>
+          <meta
+            name="description"
+            content="Candle data visualization for financial analysis"
+          />
+          <meta name="keywords" content="candle, chart, financial, data" />
+        </Helmet>
         <h1 className="text-3xl font-bold text-center mb-10 mt-16">
           {t("candleDataFor")} {symbol}
         </h1>
-
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {candleData.map((item) => (
-            <li
-              key={item._id}
-              className="border border-gray-200 rounded-lg p-6 bg-white shadow-md transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl hover:bg-blue-50 cursor-pointer"
-            >
-              <Helmet>
-                <title>{t(`candel data for ${item._source.symbol}`)}</title>
-                <meta
-                  name="description"
-                  content="This page to show all data details for Financial management."
-                />
-                <meta name="keywords" content="data, list, information, SEO" />
-                <meta name="author" content="FutTech" />
-              </Helmet>
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                {t("candleData")}
-              </h2>
-              <p className="text-gray-600">
-                <strong>{t("dateTime")}:</strong> {item._source.dateTime}
-              </p>
-              <p className="text-gray-600">
-                <strong>{t("startPrice")}:</strong> {item._source.startPrice}
-              </p>
-              <p className="text-gray-600">
-                <strong>{t("highestPrice")}:</strong>{" "}
-                {item._source.highestPrice}
-              </p>
-              <p className="text-gray-600">
-                <strong>{t("lowestPrice")}:</strong> {item._source.lowestPrice}
-              </p>
-              <p className="text-gray-600">
-                <strong>{t("endPrice")}:</strong> {item._source.endPrice}
-              </p>
-              <p className="text-gray-600">
-                <strong>{t("volume")}:</strong> {item._source.volume}
-              </p>
-              <p className="text-gray-600">
-                <strong>{t("currency")}:</strong> {item._source.currency}
-              </p>
-              <p className="text-gray-600">
-                <strong>{t("candleType")}:</strong> {item._source.candleType}
-              </p>
-            </li>
-          ))}
-        </ul>
+        {/* Financial Chart */}
+        <div className="w-full max-w-6xl mx-auto mt-8 relative">
+          {/* Explanation Box */}
+          <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm p-3 rounded-md shadow-sm z-10 max-w-[200px] border border-gray-100">
+            <h3 className="font-medium text-base mb-1 text-gray-800">
+              Chart Explanation
+            </h3>
+            <p className="text-xs text-gray-600 leading-tight">
+              This chart shows price movements over time. Each candle
+              represents:
+              <ul className="space-y-1 mt-1">
+                <li className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  Green: Price increase
+                </li>
+                <li className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                  Red: Price decrease
+                </li>
+                <li className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                  Top line: Highest price
+                </li>
+                <li className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                  Bottom line: Lowest price
+                </li>
+                <li className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-gray-600 rounded-full"></span>
+                  Body: Open/Close price
+                </li>
+              </ul>
+            </p>
+          </div>
+          <div
+            className="bg-white p-6 rounded-lg shadow-md"
+            style={{ height: "600px" }}
+          >
+            <Chart
+              ref={(ref) => {
+                chartRef.current = ref;
+                if (ref) {
+                  chartInstance.current = ref?.chartInstance;
+                }
+              }}
+              type="candlestick"
+              data={{
+                datasets: [
+                  {
+                    type: "candlestick",
+                    label: symbol,
+                    data: chartData,
+                    borderColor: (ctx) => {
+                      const { raw } = ctx.dataset.data[ctx.dataIndex] || {};
+                      return raw?.c >= raw?.o ? "#16a34a" : "#dc2626";
+                    },
+                    borderWidth: 1,
+                    backgroundColor: (ctx) => {
+                      const { raw } = ctx.dataset.data[ctx.dataIndex] || {};
+                      return raw?.c >= raw?.o
+                        ? "rgba(22, 163, 74, 0.3)"
+                        : "rgba(220, 38, 38, 0.3)";
+                    },
+                    yAxisID: "y",
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                  mode: "index",
+                  intersect: false,
+                },
+                scales: {
+                  x: {
+                    type: "timeseries",
+                    time: {
+                      unit: "day",
+                      tooltipFormat: "MMM dd, yyyy HH:mm",
+                    },
+                    grid: {
+                      color: "#f3f4f6",
+                    },
+                  },
+                  y: {
+                    beginAtZero: false,
+                    grid: {
+                      color: "#f3f4f6",
+                    },
+                    ticks: {
+                      callback: (value) => `$${value.toFixed(2)}`,
+                    },
+                    position: "left",
+                  },
+                  "y-volume": {
+                    beginAtZero: true,
+                    grid: {
+                      display: false,
+                    },
+                    position: "right",
+                    display: false,
+                  },
+                },
+                plugins: {
+                  zoom: {
+                    zoom: {
+                      wheel: {
+                        enabled: true,
+                      },
+                      pinch: {
+                        enabled: true,
+                      },
+                      mode: "x",
+                    },
+                    pan: {
+                      enabled: true,
+                      mode: "x",
+                    },
+                  },
+                  annotation: {
+                    annotations: {
+                      line1: {
+                        type: "line",
+                        borderColor: "#16a34a",
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        label: {
+                          enabled: true,
+                          content: "Up Trend",
+                          position: "end",
+                          backgroundColor: "#16a34a",
+                          color: "#fff",
+                          font: {
+                            size: 12,
+                          },
+                        },
+                      },
+                      line2: {
+                        type: "line",
+                        borderColor: "#dc2626",
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        label: {
+                          enabled: true,
+                          content: "Down Trend",
+                          position: "end",
+                          backgroundColor: "#dc2626",
+                          color: "#fff",
+                          font: {
+                            size: 12,
+                          },
+                        },
+                      },
+                      arrowUp: {
+                        type: "line",
+                        borderColor: "#16a34a",
+                        borderWidth: 2,
+                        arrowHeads: {
+                          end: {
+                            enabled: true,
+                            fill: true,
+                            length: 10,
+                            width: 6,
+                          },
+                        },
+                      },
+                      arrowDown: {
+                        type: "line",
+                        borderColor: "#dc2626",
+                        borderWidth: 2,
+                        arrowHeads: {
+                          end: {
+                            enabled: true,
+                            fill: true,
+                            length: 10,
+                            width: 6,
+                          },
+                        },
+                      },
+                    },
+                  },
+                  tooltip: {
+                    backgroundColor: "rgba(15, 23, 42, 0.95)",
+                    borderColor: "#1e293b",
+                    borderWidth: 1,
+                    titleColor: "#f8fafc",
+                    bodyColor: "#e2e8f0",
+                    padding: 8,
+                    cornerRadius: 6,
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                    bodySpacing: 4,
+                    titleSpacing: 2,
+                    titleFont: {
+                      size: 12,
+                      weight: "bold",
+                    },
+                    bodyFont: {
+                      size: 10,
+                    },
+                    animation: {
+                      duration: 150,
+                      easing: "easeOutQuart",
+                    },
+                    position: "nearest",
+                    xAlign: "center",
+                    yAlign: "top",
+                    callbacks: {
+                      label: (context) => {
+                        const data = context.raw || {};
+                        return [
+                          `📈 Open: $${data.o?.toFixed(2) || "N/A"}`,
+                          `🚀 High: $${data.h?.toFixed(2) || "N/A"}`,
+                          `📉 Low: $${data.l?.toFixed(2) || "N/A"}`,
+                          `📊 Close: $${data.c?.toFixed(2) || "N/A"}`,
+                        ];
+                      },
+                      title: (context) => {
+                        const date = new Date(context[0].raw.x);
+                        return `📅 ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                      },
+                    },
+                  },
+                  legend: {
+                    display: false,
+                  },
+                },
+              }}
+            />
+          </div>
+        </div>
+        <div className="w-full max-w-6xl mx-auto mt-8 overflow-x-auto">
+          <table className="min-w-full bg-white shadow-md rounded-lg">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="px-4 py-2">{t("dateTime")}</th>
+                <th className="px-4 py-2">{t("startPrice")}</th>
+                <th className="px-4 py-2">{t("highestPrice")}</th>
+                <th className="px-4 py-2">{t("lowestPrice")}</th>
+                <th className="px-4 py-2">{t("endPrice")}</th>
+                <th className="px-4 py-2">{t("volume")}</th>
+                <th className="px-4 py-2">{t("currency")}</th>
+                <th className="px-4 py-2">{t("candleType")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {candleData.map((item) => (
+                <tr key={item._id} className="border-b hover:bg-gray-100">
+                  <td className="px-4 py-2">
+                    {new Date(item._source.dateTime).toLocaleString()}
+                  </td>
+                  <td className="px-4 py-2">{item._source.startPrice}</td>
+                  <td className="px-4 py-2">{item._source.highestPrice}</td>
+                  <td className="px-4 py-2">{item._source.lowestPrice}</td>
+                  <td className="px-4 py-2">{item._source.endPrice}</td>
+                  <td className="px-4 py-2">{item._source.volume}</td>
+                  <td className="px-4 py-2">{item._source.currency}</td>
+                  <td className="px-4 py-2">{item._source.candleType}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

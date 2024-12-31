@@ -25,7 +25,7 @@ const DataDisplay = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("exchange.json", {
+        const response = await axios.get("/exchange.json", {
           cache: "force-cache",
         });
         setData(response.data.hits.hits || []);
