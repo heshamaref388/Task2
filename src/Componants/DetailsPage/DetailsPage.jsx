@@ -178,7 +178,7 @@ const DetailsPage = () => {
               onClick={() => navigate(`/candle/${details.symbol}`)} // Navigate to candle data
               className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-md shadow hover:shadow-lg transition duration-300 transform hover:scale-105"
             >
-              {t("viewCandleData")}
+              {t("Candle Data")}
             </button>
           </div>
         </div>
