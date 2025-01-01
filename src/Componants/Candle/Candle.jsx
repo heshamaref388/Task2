@@ -109,7 +109,7 @@ const CandleDataPage = () => {
         <button
           onClick={handleBackNavigation}
           title={t("pressBackspace")}
-          className="absolute top-4 left-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-md shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hover:opacity-90"
+          className="absolute top-4 left-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-md shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hover:opacity-90 text-sm sm:text-base"
         >
           &larr; {t("back")}
         </button>
@@ -130,40 +130,40 @@ const CandleDataPage = () => {
         {/* Financial Chart */}
         <div className="w-full max-w-6xl mx-auto mt-8 relative">
           {/* Explanation Box */}
-          <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm p-3 rounded-md shadow-sm z-10 max-w-[200px] border border-gray-100">
-            <h3 className="font-medium text-base mb-1 text-gray-800">
+          <div className="sm:absolute top-4 right-4 bg-white/95 backdrop-blur-sm p-2 sm:p-3 rounded-md shadow-sm z-10 w-full sm:max-w-[200px] md:max-w-[250px] lg:max-w-[300px] mt-4 sm:mt-0 mx-2 sm:mx-0">
+            <h3 className="font-medium text-xs sm:text-sm md:text-base mb-1 text-gray-800">
               Chart Explanation
             </h3>
-            <p className="text-xs text-gray-600 leading-tight">
+            <p className="text-[11px] sm:text-xs md:text-sm text-gray-600 leading-tight">
               This chart shows price movements over time. Each candle
               represents:
-              <ul className="space-y-1 mt-1">
+              <ul className="grid grid-cols-2 gap-x-2 gap-y-1 mt-1 sm:block sm:space-y-1">
                 <li className="flex items-center gap-1">
                   <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Green: Price increase
+                  <span>Green: Price increase</span>
                 </li>
                 <li className="flex items-center gap-1">
                   <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                  Red: Price decrease
+                  <span>Red: Price decrease</span>
                 </li>
                 <li className="flex items-center gap-1">
                   <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                  Top line: Highest price
+                  <span>Top line: Highest price</span>
                 </li>
                 <li className="flex items-center gap-1">
                   <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                  Bottom line: Lowest price
+                  <span>Bottom line: Lowest price</span>
                 </li>
-                <li className="flex items-center gap-1">
+                <li className="flex items-center gap-1 col-span-2 sm:col-span-1">
                   <span className="w-2 h-2 bg-gray-600 rounded-full"></span>
-                  Body: Open/Close price
+                  <span>Body: Open/Close price</span>
                 </li>
               </ul>
             </p>
           </div>
           <div
-            className="bg-white p-6 rounded-lg shadow-md"
-            style={{ height: "600px" }}
+            className="bg-white p-4 sm:p-6 rounded-lg shadow-md"
+            style={{ height: "50vh", minHeight: "300px", maxHeight: "800px" }}
           >
             <Chart
               ref={(ref) => {
@@ -358,7 +358,7 @@ const CandleDataPage = () => {
             />
           </div>
         </div>
-        <div className="w-full max-w-6xl mx-auto mt-8 overflow-x-auto">
+        <div className="w-full max-w-6xl mx-auto mt-8 overflow-x-auto px-2 sm:px-0">
           <table className="min-w-full bg-white shadow-md rounded-lg">
             <thead>
               <tr className="bg-gray-200">
